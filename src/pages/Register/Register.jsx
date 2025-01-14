@@ -8,14 +8,17 @@ import useAxiosURL from "@/hooks/useAxiosURL";
 const Register = () => {
   const navigate = useNavigate();
   const axios = useAxiosURL();
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const { theme, createUser, updateUserProfile } = useAuth();
   const from = location.state?.from?.pathname || "/";
 
   const onSubmit = (data) => {
     createUser(data.email, data.password)
-      .then((user) => {
-        console.log(user);
+      .then(() => {
         updateUserProfile(data.name, data.photoURL)
           .then(() => {
             const userInfo = {
@@ -49,57 +52,67 @@ const Register = () => {
       }`}
     >
       <div
-        className={`bg-white p-8 rounded-lg shadow-lg w-full max-w-sm ${
+        className={`bg-white p-8 rounded-lg shadow-lg w-full max-w-md ${
           theme === "dark" ? "bg-gray-800" : "bg-white"
         }`}
       >
         <h2
-          className={`text-2xl font-bold mb-6 text-center ${
+          className={`text-3xl font-semibold mb-6 text-center ${
             theme === "dark" ? "text-white" : "text-black"
           }`}
         >
           Register
         </h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
             <label
               className={`block text-sm font-medium mb-2 ${
                 theme === "dark" ? "text-gray-300" : "text-gray-700"
               }`}
-              htmlFor="email"
+              htmlFor="name"
             >
               Name
             </label>
             <input
               type="text"
               id="name"
-              {...register("name", { required: true })}
+              {...register("name", { required: "Name is required" })}
               className={`border ${
                 theme === "dark" ? "border-gray-600" : "border-gray-300"
-              } rounded-lg p-2 w-full`}
-              placeholder="your name"
+              } rounded-lg p-3 w-full`}
+              placeholder="Your name"
             />
+            {errors.name && (
+              <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
+            )}
           </div>
-          <div className="mb-4">
+
+          <div>
             <label
               className={`block text-sm font-medium mb-2 ${
                 theme === "dark" ? "text-gray-300" : "text-gray-700"
               }`}
-              htmlFor="email"
+              htmlFor="photoURL"
             >
-              Photo
+              Photo URL
             </label>
             <input
               type="text"
               id="photoURL"
-              {...register("photoURL", { required: true })}
+              {...register("photoURL", { required: "Photo URL is required" })}
               className={`border ${
                 theme === "dark" ? "border-gray-600" : "border-gray-300"
-              } rounded-lg p-2 w-full`}
-              placeholder="Photo URL"
+              } rounded-lg p-3 w-full`}
+              placeholder="Your photo URL"
             />
+            {errors.photoURL && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.photoURL.message}
+              </p>
+            )}
           </div>
-          <div className="mb-4">
+
+          <div>
             <label
               className={`block text-sm font-medium mb-2 ${
                 theme === "dark" ? "text-gray-300" : "text-gray-700"
@@ -111,14 +124,26 @@ const Register = () => {
             <input
               type="email"
               id="email"
-              {...register("email", { required: true })}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
+                  message: "Invalid email format",
+                },
+              })}
               className={`border ${
                 theme === "dark" ? "border-gray-600" : "border-gray-300"
-              } rounded-lg p-2 w-full`}
+              } rounded-lg p-3 w-full`}
               placeholder="you@example.com"
             />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
-          <div className="mb-4">
+
+          <div>
             <label
               className={`block text-sm font-medium mb-2 ${
                 theme === "dark" ? "text-gray-300" : "text-gray-700"
@@ -130,23 +155,31 @@ const Register = () => {
             <input
               type="password"
               id="password"
-              {...register("password", { required: true })}
+              {...register("password", { required: "Password is required" })}
               className={`border ${
                 theme === "dark" ? "border-gray-600" : "border-gray-300"
-              } rounded-lg p-2 w-full`}
+              } rounded-lg p-3 w-full`}
               placeholder="********"
             />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
+
           <button
             type="submit"
             className={`w-full ${
               theme === "dark" ? "bg-blue-600" : "bg-blue-600"
-            } text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300`}
+            } text-white py-3 rounded-lg hover:bg-blue-700 transition duration-300`}
           >
             Register
           </button>
         </form>
+
         <SocialLogin />
+
         <div className="mt-4 text-center">
           <span
             className={`text-sm ${
@@ -155,7 +188,7 @@ const Register = () => {
           >
             Already have an account?
           </span>
-          <Link to="/login" className={`text-blue-600 hover:underline`}>
+          <Link to="/login" className="text-blue-600 hover:underline">
             Login
           </Link>
         </div>

@@ -7,6 +7,7 @@ import Register from "@/pages/Register/Register";
 import Meals from "@/pages/Meals/Meals";
 import UpcomingMeals from "@/pages/UpcomingMeals/UpcomingMeals";
 import { createBrowserRouter } from "react-router";
+import DashboardLayout from "@/layout/DashboardLayout";
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,12 @@ const router = createBrowserRouter([
         path: "/upcoming-meals",
         element: <UpcomingMeals />,
       },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: <DashboardLayout />,
+    children: [
       {
         path: "/dashboard",
         element: <h1>Dashboard</h1>,

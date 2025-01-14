@@ -145,10 +145,12 @@ const Navbar = () => {
                 )}
               </div>
             ) : (
-              <NavLink to="/register" isActive={isActive("/register")}>
-                <FaUserPlus />
-                <span>Join Us</span>
-              </NavLink>
+              <div className="hidden sm:block">
+                <NavLink to="/register" isActive={isActive("/register")}>
+                  <FaUserPlus />
+                  <span>Join Us</span>
+                </NavLink>
+              </div>
             )}
             <button
               className="text-gray-500 md:hidden"
@@ -175,16 +177,23 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden">
             <NavLink to="/" isActive={isActive("/")}>
-              Home
+              <FaHome />
+              <span>Home</span>
             </NavLink>
             <NavLink to="/meals" isActive={isActive("/meals")}>
-              Meals
+              <FaUtensils />
+              <span>Meals</span>
             </NavLink>
             <NavLink
               to="/upcoming-meals"
               isActive={isActive("/upcoming-meals")}
             >
-              Upcoming Meals
+              <FaCalendarAlt />
+              <span>Upcoming Meals</span>
+            </NavLink>
+            <NavLink to="/register" isActive={isActive("/register")}>
+              <FaUserPlus />
+              <span>Join Us</span>
             </NavLink>
           </div>
         )}
