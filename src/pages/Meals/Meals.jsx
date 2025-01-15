@@ -61,7 +61,7 @@ const Meals = () => {
   // Reset meals when filters change
 
   const loadMore = async () => {
-    if (isLoading) return;
+    if (isLoading) return <LoadingSpinner />;
 
     try {
       setIsLoading(true);

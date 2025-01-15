@@ -55,7 +55,7 @@ const AllMeals = () => {
   const [sortBy, setSortBy] = useState("default");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState("table"); // table or grid
+  const [viewMode, setViewMode] = useState("table");
   const navigate = useNavigate();
   const limit = 10;
 
@@ -113,7 +113,7 @@ const AllMeals = () => {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => navigate(`/meals/${meal._id}`)}
+        onClick={() => navigate(`/meal/${meal._id}`)}
         title="View Details"
       >
         <Eye className="h-4 w-4" />
@@ -121,7 +121,7 @@ const AllMeals = () => {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => navigate(`/dashboard/update-meal/${meal._id}`)}
+        onClick={() => navigate(`/update-meal/${meal._id}`)}
         title="Edit Meal"
       >
         <Pencil className="h-4 w-4" />

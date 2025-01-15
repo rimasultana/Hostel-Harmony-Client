@@ -13,6 +13,9 @@ import ManageUsers from "@/pages/Dashboard/ManageUsers/ManageUsers";
 import AddMeal from "@/pages/Dashboard/AddMeal/AddMeal";
 import AllMeals from "@/pages/Dashboard/AllMeals/AllMeals";
 import PrivateRoute from "./PrivateRoute";
+import MealDetails from "@/pages/Meals/MealDetails";
+import UpdateMeal from "@/pages/Meals/UpdateMeal";
+import MyProfile from "@/pages/Dashboard/MyProfile/MyProfile";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +42,14 @@ const router = createBrowserRouter([
       {
         path: "/meals",
         element: <Meals />,
+      },
+      {
+        path: "/meal/:id",
+        element: <MealDetails />,
+      },
+      {
+        path: "/update-meal/:id",
+        element: <UpdateMeal />,
       },
       {
         path: "/upcoming-meals",
@@ -86,7 +97,7 @@ const router = createBrowserRouter([
       // User Routes
       {
         path: "my-profile",
-        element: <h1>My Profile</h1>,
+        element: <MyProfile />,
       },
       {
         path: "requested-meals",
