@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Navigate, useLocation } from "react-router";
-import useAuth from "../hooks/useAuth";
-import LoadingSpinner from "../components/Loading";
+import LoadingSpinner from "@/components/ui/Loading";
+import useAuth from "@/hooks/useAuth";
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
