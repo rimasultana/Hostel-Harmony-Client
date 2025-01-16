@@ -80,7 +80,7 @@ const MealDetails = () => {
   // Add review mutation
   const reviewMutation = useMutation({
     mutationFn: async () => {
-      const res = await axiosSecure.post(`/meals/${id}/reviews`, {
+      const res = await axiosSecure.post(`/meals/reviews/${id}`, {
         text: reviewText,
         rating,
       });
