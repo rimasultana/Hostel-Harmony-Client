@@ -122,6 +122,7 @@ const Navbar = () => {
                     "https://e7.pngegg.com/pngimages/926/34/png-clipart-computer-icons-user-profile-avatar-avatar-face-heroes.png"
                   }
                   alt="Profile"
+                  title={user?.displayName}
                   className="w-10 h-10 border-2 border-gray-500 rounded-full cursor-pointer"
                   onClick={toggleDropdown}
                 />
