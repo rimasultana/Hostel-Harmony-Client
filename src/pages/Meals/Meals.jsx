@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -28,8 +29,10 @@ const Meals = () => {
   const [meals, setMeals] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const ITEMS_PER_PAGE = 6;
 
-  const debouncedSearch = useDebounce(searchTerm, 500);
+  const debouncedSearch = useDebounce(searchTerm, 100);
 
   // Fetch initial data and metadata
   const { data: metadata = {}, isLoading: isMetadataLoading } = useQuery({
@@ -58,13 +61,43 @@ const Meals = () => {
     }
   }, [metadata]);
 
-  // Reset meals when filters change
+  // Initial data load
+  useEffect(() => {
+    loadInitialData();
+  }, [debouncedSearch, selectedCategory, priceRange]);
+
+  const loadInitialData = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const res = await axiosSecure.get("/meals", {
+        params: {
+          search: debouncedSearch,
+          category: selectedCategory === "All" ? "" : selectedCategory,
+          minPrice: priceRange[0],
+          maxPrice: priceRange[1],
+          page: 1,
+          limit: ITEMS_PER_PAGE,
+        },
+      });
+
+      setMeals(res.data.meals);
+      setHasMore(res.data.meals.length === ITEMS_PER_PAGE);
+      setPage(2);
+    } catch (err) {
+      setError("Failed to load meals. Please try again.");
+      setHasMore(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const loadMore = async () => {
-    if (isLoading) return <LoadingSpinner />;
+    if (isLoading) return;
 
     try {
       setIsLoading(true);
+      setError(null);
       const res = await axiosSecure.get("/meals", {
         params: {
           search: debouncedSearch,
@@ -72,26 +105,22 @@ const Meals = () => {
           minPrice: priceRange[0],
           maxPrice: priceRange[1],
           page,
-          limit: 10,
+          limit: ITEMS_PER_PAGE,
         },
       });
 
       const newMeals = res.data.meals;
       setMeals((prevMeals) => [...prevMeals, ...newMeals]);
-      setHasMore(newMeals.length === 1);
+      setHasMore(newMeals.length === ITEMS_PER_PAGE);
       setPage((prev) => prev + 1);
-    } catch (error) {
-      console.error("Error loading meals:", error);
+    } catch (err) {
+      setError("Failed to load more meals. Please try again.");
       setHasMore(false);
     } finally {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    setMeals([]);
-    setPage(1);
-    setHasMore(true);
-  }, [debouncedSearch, selectedCategory, priceRange]);
+
   const MealCard = ({ meal }) => (
     <Card className="h-full flex flex-col group hover:shadow-lg transition-shadow duration-200">
       <CardHeader className="flex-none p-0">
@@ -158,7 +187,7 @@ const Meals = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Filters Section */}
+      {/* Filters section */}
       <div className="bg-muted/50 p-6 rounded-lg mb-8 space-y-6 backdrop-blur-sm">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
@@ -216,31 +245,32 @@ const Meals = () => {
         </div>
       </div>
 
-      {/* Meals Grid with Infinite Scroll */}
+      {error && <div className="text-red-500 text-center my-4">{error}</div>}
+
       <InfiniteScroll
         pageStart={0}
         loadMore={loadMore}
-        hasMore={hasMore}
+        hasMore={hasMore && !isLoading}
         loader={
           <div className="text-center py-4" key={0}>
             <LoadingSpinner />
           </div>
         }
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {meals.map((meal) => (
-            <MealCard key={meal._id} meal={meal} />
-          ))}
-        </div>
+        {meals.map((meal) => (
+          <MealCard key={meal._id} meal={meal} />
+        ))}
       </InfiniteScroll>
 
-      {meals.length === 0 && !isMetadataLoading && !isLoading && (
-        <div className="text-center py-12">
-          <h3 className="text-xl font-semibold">No meals found</h3>
-          <p className="text-muted-foreground mt-2">
-            Try adjusting your search or filters
-          </p>
-        </div>
+      {!hasMore && meals.length > 0 && (
+        <p className="text-center text-gray-500 mt-4">No more meals to load</p>
+      )}
+
+      {!isLoading && meals.length === 0 && (
+        <p className="text-center text-gray-500 mt-4">
+          No meals found matching your criteria
+        </p>
       )}
     </div>
   );
