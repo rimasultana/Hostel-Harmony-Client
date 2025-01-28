@@ -1,329 +1,153 @@
-/* eslint-disable no-unused-vars */
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import useAuth from "@/hooks/useAuth";
 import useAxiosSecurity from "@/hooks/axiosSecurity";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  User,
-  Mail,
-  Calendar,
-  Package,
-  Heart,
-  MessageCircle,
-  Clock,
-  DollarSign,
-  Award,
-  Star,
-} from "lucide-react";
-import LoadingSpinner from "@/components/ui/Loading";
+import useAuth from "@/hooks/useAuth";
+import { Card } from "@/components/ui/card";
+import { Loader2, Clock, Medal } from "lucide-react";
+import { format } from "date-fns";
 
 const MyProfile = () => {
   const { user } = useAuth();
   const [axiosSecure] = useAxiosSecurity();
-  const [activeTab, setActiveTab] = useState("overview");
 
-  // Fetch user profile data
-  const { data: profile = {}, isLoading } = useQuery({
+  const { data: profile, isLoading } = useQuery({
     queryKey: ["profile", user?.email],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/users/profile/${user?.email}`);
+      const res = await axiosSecure.get(`/users/${user.email}`);
       return res.data;
     },
-    enabled: !!user?.email,
   });
 
-  // Fetch user's meals
-  const { data: userMeals = [], isLoading: isMealsLoading } = useQuery({
-    queryKey: ["user-meals", user?.email],
-    queryFn: async () => {
-      const res = await axiosSecure.get(`/meals/user/${user?.email}`);
-      return res.data;
-    },
-    enabled: !!user?.email,
-  });
-
-  // Fetch user's reviews
-  const { data: userReviews = [], isLoading: isReviewsLoading } = useQuery({
-    queryKey: ["user-reviews", user?.email],
-    queryFn: async () => {
-      const res = await axiosSecure.get(`/reviews/user/${user?.email}`);
-      return res.data;
-    },
-    enabled: !!user?.email,
-  });
-
-  if (isLoading || isMealsLoading || isReviewsLoading)
-    return <LoadingSpinner />;
-
-  const stats = {
-    meals_added: userMeals.length,
-    total_likes: userMeals.reduce((sum, meal) => sum + (meal.likes || 0), 0),
-    total_reviews: userMeals.reduce(
-      (sum, meal) => sum + (meal.reviews_count || 0),
-      0
-    ),
-    avg_rating: userMeals.length
-      ? (
-          userMeals.reduce((sum, meal) => sum + (meal.rating || 0), 0) /
-          userMeals.length
-        ).toFixed(1)
-      : 0,
-  };
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Profile Header */}
-      <div className="mb-8">
-        <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+    <div className="container mx-auto p-4">
+      <div className="max-w-4xl mx-auto">
+        <Card className="bg-white shadow-lg rounded-lg overflow-hidden">
+          {/* Profile Header */}
           <div className="relative">
-            <img
-              src={user?.photoURL || "https://i.pravatar.cc/150"}
-              alt={user?.displayName}
-              className="w-24 h-24 rounded-full object-cover border-4 border-primary/20"
-            />
-            {profile.badge && (
-              <Badge
-                className="absolute -bottom-2 left-1/2 -translate-x-1/2"
-                variant="default"
-              >
-                {profile.badge}
-              </Badge>
-            )}
-          </div>
-          <div className="flex-grow">
-            <h1 className="text-3xl font-bold mb-2">{user?.displayName}</h1>
-            <div className="flex flex-wrap gap-4 text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Mail className="h-4 w-4" />
-                <span>{user?.email}</span>
+            <div className="h-32 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+            <div className="absolute -bottom-16 left-4">
+              <div className="p-1 bg-white rounded-full">
+                <img
+                  src={profile?.photoURL}
+                  alt={profile?.name}
+                  className="w-32 h-32 rounded-full border-4 border-white object-cover"
+                />
               </div>
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
+            </div>
+          </div>
+
+          {/* Profile Info */}
+          <div className="pt-20 px-6 pb-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {profile?.name}
+                </h2>
+                <p className="text-gray-500">{profile?.email}</p>
+              </div>
+              <div className="mt-4 md:mt-0">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-2 rounded-full">
+                  <Medal className="w-5 h-5" />
+                  <span className="font-semibold">
+                    {profile?.subscription} Member
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Join Date */}
+            <div className="border-t border-gray-200 pt-6">
+              <div className="flex items-center gap-2 text-gray-600">
+                <Clock className="w-5 h-5" />
                 <span>
-                  Joined {new Date(profile.createdAt).toLocaleDateString()}
+                  Joined {format(new Date(profile?.createdAt), "MMMM dd, yyyy")}
                 </span>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card>
-          <CardContent className="flex items-center gap-4 p-4">
-            <div className="p-3 bg-primary/10 rounded-full">
-              <Package className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Meals Added</p>
-              <p className="text-2xl font-bold">{stats.meals_added}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="flex items-center gap-4 p-4">
-            <div className="p-3 bg-red-100 rounded-full">
-              <Heart className="h-6 w-6 text-red-500" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Total Likes</p>
-              <p className="text-2xl font-bold">{stats.total_likes}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="flex items-center gap-4 p-4">
-            <div className="p-3 bg-blue-100 rounded-full">
-              <MessageCircle className="h-6 w-6 text-blue-500" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Reviews Received</p>
-              <p className="text-2xl font-bold">{stats.total_reviews}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="flex items-center gap-4 p-4">
-            <div className="p-3 bg-yellow-100 rounded-full">
-              <Star className="h-6 w-6 text-yellow-500" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Average Rating</p>
-              <p className="text-2xl font-bold">{stats.avg_rating}</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tabs Section */}
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="mb-8">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="meals">My Meals</TabsTrigger>
-          <TabsTrigger value="reviews">My Reviews</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Subscription Status */}
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Award className="h-5 w-5 text-primary" />
-                  Subscription Status
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Current Plan</span>
-                    <Badge
-                      variant={
-                        profile.subscription?.active ? "default" : "secondary"
-                      }
-                    >
-                      {profile.subscription?.plan || "Free"}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Status</span>
-                    <Badge
-                      variant={
-                        profile.subscription?.active ? "default" : "secondary"
-                      }
-                    >
-                      {profile.subscription?.active ? "Active" : "Inactive"}
-                    </Badge>
-                  </div>
-                  {profile.subscription?.expiresAt && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Expires</span>
-                      <span>
-                        {new Date(
-                          profile.subscription.expiresAt
-                        ).toLocaleDateString()}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
 
             {/* Recent Activity */}
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-primary" />
-                  Recent Activity
-                </h3>
+            <div className="border-t border-gray-200 mt-6 pt-6">
+              <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+              {profile?.recentActivity && profile.recentActivity.length > 0 ? (
                 <div className="space-y-4">
-                  {profile.recentActivity?.map((activity, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <div className="p-2 rounded-full bg-muted">
-                        {activity.type === "meal" && (
-                          <Package className="h-4 w-4" />
-                        )}
-                        {activity.type === "like" && (
-                          <Heart className="h-4 w-4" />
-                        )}
-                        {activity.type === "review" && (
-                          <MessageCircle className="h-4 w-4" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-sm">{activity.description}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(activity.timestamp).toLocaleDateString()}
+                  {profile.recentActivity.map((activity, index) => (
+                    <div
+                      key={index}
+                      className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg"
+                    >
+                      <div className="flex-1">
+                        <p className="text-gray-900">{activity.action}</p>
+                        <p className="text-sm text-gray-500">
+                          {format(new Date(activity.timestamp), "PPp")}
                         </p>
                       </div>
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+              ) : (
+                <p className="text-gray-500 italic">No recent activity</p>
+              )}
+            </div>
 
-        <TabsContent value="meals">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {userMeals.map((meal) => (
-              <Card key={meal._id}>
-                <CardContent className="p-0">
-                  <img
-                    src={meal.image}
-                    alt={meal.title}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-4">
-                    <h3 className="font-semibold mb-2">{meal.title}</h3>
-                    <div className="flex items-center justify-between">
-                      <Badge variant="secondary">{meal.category}</Badge>
-                      <span className="text-primary font-medium">
-                        ${meal.price}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 mt-4">
-                      <div className="flex items-center gap-1">
-                        <Heart className="h-4 w-4" />
-                        <span>{meal.likes}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <MessageCircle className="h-4 w-4" />
-                        <span>{meal.reviews_count}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4" />
-                        <span>{meal.rating?.toFixed(1)}</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {/* Membership Benefits */}
+            <div className="border-t border-gray-200 mt-6 pt-6">
+              <h3 className="text-lg font-semibold mb-4">
+                Membership Benefits
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    Current Plan
+                  </h4>
+                  <p className="text-gray-600">
+                    {profile?.subscription} Membership
+                  </p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">Features</h4>
+                  <ul className="text-gray-600 space-y-1">
+                    {profile?.subscription === "Bronze" && (
+                      <>
+                        <li>• Basic meal access</li>
+                        <li>• Standard support</li>
+                      </>
+                    )}
+                    {profile?.subscription === "Silver" && (
+                      <>
+                        <li>• Premium meal access</li>
+                        <li>• Priority support</li>
+                        <li>• Like upcoming meals</li>
+                      </>
+                    )}
+                    {profile?.subscription === "Gold" && (
+                      <>
+                        <li>• All Silver features</li>
+                        <li>• VIP support</li>
+                        <li>• Special discounts</li>
+                      </>
+                    )}
+                    {profile?.subscription === "Platinum" && (
+                      <>
+                        <li>• All Gold features</li>
+                        <li>• 24/7 support</li>
+                        <li>• Exclusive events</li>
+                        <li>• Custom meal requests</li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
-        </TabsContent>
-
-        <TabsContent value="reviews">
-          <div className="space-y-6">
-            {userReviews.map((review) => (
-              <Card key={review._id}>
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold mb-2">{review.text}</h3>
-                      <div className="flex items-center gap-1">
-                        {[...Array(review.rating)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {new Date(review.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <p className="mt-4 text-muted-foreground">{review.text}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
+        </Card>
+      </div>
     </div>
   );
 };
