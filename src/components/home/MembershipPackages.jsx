@@ -2,10 +2,12 @@ import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import useAuth from "@/hooks/useAuth";
 
 const packages = [
   {
-    name: "silver",
+    id: "silver",
     title: "Silver Package",
     price: 29.99,
     color: "bg-gradient-to-br from-gray-100 to-gray-300",
@@ -18,7 +20,7 @@ const packages = [
     ],
   },
   {
-    name: "gold",
+    id: "gold",
     title: "Gold Package",
     price: 49.99,
     color: "bg-gradient-to-br from-yellow-100 to-yellow-300",
@@ -33,7 +35,7 @@ const packages = [
     ],
   },
   {
-    name: "platinum",
+    id: "platinum",
     title: "Platinum Package",
     price: 79.99,
     color: "bg-gradient-to-br from-slate-700 to-slate-900",
@@ -72,6 +74,32 @@ const itemVariants = {
 
 const MembershipPackages = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handlePackageSelect = (pkg) => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Login Required",
+        description: "Please login to purchase a membership package",
+      });
+      navigate("/login");
+      return;
+    }
+
+    // Navigate to checkout with package details
+    navigate(`/checkout/${pkg.id}`, {
+      state: {
+        package: {
+          name: pkg.title,
+          price: pkg.price,
+          id: pkg.id,
+          features: pkg.features,
+        },
+      },
+    });
+  };
 
   return (
     <div className="py-16">
@@ -96,9 +124,9 @@ const MembershipPackages = () => {
           viewport={{ once: true }}
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
-          {packages.map((pkg, index) => (
+          {packages.map((pkg) => (
             <motion.div
-              key={pkg.name}
+              key={pkg.id}
               variants={itemVariants}
               className="relative"
             >
@@ -112,7 +140,7 @@ const MembershipPackages = () => {
               <motion.div
                 whileHover={{ y: -5, scale: 1.02 }}
                 className={`h-full rounded-2xl p-8 ${pkg.color} ${
-                  pkg.name === "platinum" ? "text-white" : "text-gray-900"
+                  pkg.id === "platinum" ? "text-white" : "text-gray-900"
                 } shadow-xl flex flex-col`}
               >
                 <div className="mb-8">
@@ -129,7 +157,7 @@ const MembershipPackages = () => {
                       key={i}
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 + i * 0.05 }}
+                      transition={{ delay: i * 0.1 }}
                       className="flex items-center gap-2"
                     >
                       <Check className="h-5 w-5 shrink-0" />
@@ -144,9 +172,9 @@ const MembershipPackages = () => {
                 >
                   <Button
                     className="w-full"
-                    variant={pkg.name === "platinum" ? "secondary" : "default"}
+                    variant={pkg.id === "platinum" ? "secondary" : "default"}
                     size="lg"
-                    onClick={() => navigate(`/checkout/${pkg.name}`)}
+                    onClick={() => handlePackageSelect(pkg)}
                   >
                     Choose {pkg.title}
                   </Button>

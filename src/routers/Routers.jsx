@@ -18,6 +18,7 @@ import UpdateMeal from "@/pages/Meals/UpdateMeal";
 import MyProfile from "@/pages/Dashboard/MyProfile/MyProfile";
 import RequestedMeals from "@/pages/Dashboard/RequestedMeals/RequestedMeals";
 import ServeMeals from "@/pages/Dashboard/ServeMeals/ServeMeals";
+import PaymentHistory from "@/pages/Dashboard/PaymentHistory/PaymentHistory";
 import Payment from "@/components/ui/payment";
 
 const router = createBrowserRouter([
@@ -59,7 +60,7 @@ const router = createBrowserRouter([
         element: <UpcomingMeals />,
       },
       {
-        path: "checkout",
+        path: "checkout/:id",
         element: <Payment />,
       },
     ],
@@ -116,7 +117,7 @@ const router = createBrowserRouter([
       },
       {
         path: "payment-history",
-        element: <h1>Payment History</h1>,
+        element: <PaymentHistory />,
       },
       {
         path: "checkout",

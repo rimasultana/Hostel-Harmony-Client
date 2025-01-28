@@ -1,12 +1,13 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import useAxiosSecurity from "@/hooks/axiosSecurity";
 import useAuth from "@/hooks/useAuth";
 
 const CheckoutForm = () => {
   const [error, setError] = useState("");
+  const { state } = useLocation();
   const [clientSecret, setClientSecret] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const stripe = useStripe();
@@ -15,14 +16,13 @@ const CheckoutForm = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const totalPrice = 30;
+  const totalPrice = state?.package?.price;
 
   useEffect(() => {
     if (totalPrice > 0) {
       axiosSecurity
         .post("/create-payment-intent", { price: totalPrice })
         .then((res) => {
-          console.log(res.data.clientSecret);
           setClientSecret(res.data.clientSecret);
         });
     }
@@ -78,7 +78,10 @@ const CheckoutForm = () => {
         const payment = {
           email: user.email,
           price: totalPrice,
+          photo: user?.photoURL,
+          name: user?.displayName,
           transactionId: paymentIntent.id,
+          package: state?.package?.name,
           date: new Date(), // utc date convert. use moment js to
 
           status: "pending",
@@ -94,7 +97,7 @@ const CheckoutForm = () => {
             showConfirmButton: false,
             timer: 1500,
           });
-          navigate("/dashboard/paymentHistory");
+          navigate("/dashboard/payment-history");
         }
       }
     }
