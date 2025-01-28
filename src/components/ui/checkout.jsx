@@ -77,7 +77,7 @@ const CheckoutForm = () => {
           photo: user?.photoURL,
           name: user?.displayName,
           transactionId: paymentIntent.id,
-          package: state?.package?.name,
+          package: state?.package?.id,
           date: new Date(),
           status: "padding",
         };
