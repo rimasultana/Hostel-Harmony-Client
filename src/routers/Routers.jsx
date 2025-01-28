@@ -23,6 +23,7 @@ import UpcomingMeals from "@/pages/Dashboard/UpcomingMeals/UpcomingMeals";
 import UpcomingFood from "@/pages/UpcomingFood/UpcomingFood";
 import MyReviews from "@/pages/Dashboard/MyReviews/MyReviews";
 import AllReviews from "@/pages/Dashboard/AllReviews/AllReviews";
+import AdminRoute from "./Adminroute";
 
 const router = createBrowserRouter([
   {
@@ -64,7 +65,11 @@ const router = createBrowserRouter([
       },
       {
         path: "checkout/:id",
-        element: <Payment />,
+        element: (
+          <PrivateRoute>
+            <Payment />
+          </PrivateRoute>
+        ),
       },
     ],
   },
@@ -79,52 +84,100 @@ const router = createBrowserRouter([
       // Admin Routes
       {
         path: "admin-profile",
-        element: <AdminProfile />,
+        element: (
+          <AdminRoute>
+            <AdminProfile />
+          </AdminRoute>
+        ),
       },
       {
         path: "manage-users",
-        element: <ManageUsers />,
+        element: (
+          <AdminRoute>
+            <ManageUsers />
+          </AdminRoute>
+        ),
       },
       {
         path: "add-meal",
-        element: <AddMeal />,
+        element: (
+          <AdminRoute>
+            <AddMeal />
+          </AdminRoute>
+        ),
       },
       {
         path: "all-meals",
-        element: <AllMeals />,
+        element: (
+          <AdminRoute>
+            <AllMeals />
+          </AdminRoute>
+        ),
       },
       {
         path: "all-reviews",
-        element: <AllReviews />,
+        element: (
+          <AdminRoute>
+            <AllReviews />
+          </AdminRoute>
+        ),
       },
       {
         path: "serve-meals",
-        element: <ServeMeals />,
+        element: (
+          <AdminRoute>
+            <ServeMeals />
+          </AdminRoute>
+        ),
       },
       {
         path: "upcoming-meals",
-        element: <UpcomingMeals />,
+        element: (
+          <AdminRoute>
+            <UpcomingMeals />
+          </AdminRoute>
+        ),
       },
       // User Routes
       {
         path: "my-profile",
-        element: <MyProfile />,
+        element: (
+          <PrivateRoute>
+            <MyProfile />
+          </PrivateRoute>
+        ),
       },
       {
         path: "my-reviews",
-        element: <MyReviews />,
+        element: (
+          <PrivateRoute>
+            <MyReviews />
+          </PrivateRoute>
+        ),
       },
       {
         path: "requested-meals",
-        element: <RequestedMeals />,
+        element: (
+          <PrivateRoute>
+            <RequestedMeals />
+          </PrivateRoute>
+        ),
       },
       {
         path: "payment-history",
-        element: <PaymentHistory />,
+        element: (
+          <PrivateRoute>
+            <PaymentHistory />
+          </PrivateRoute>
+        ),
       },
       {
         path: "checkout",
-        element: <Payment />,
+        element: (
+          <PrivateRoute>
+            <Payment />
+          </PrivateRoute>
+        ),
       },
     ],
   },
