@@ -57,7 +57,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/update-meal/:id",
-        element: <UpdateMeal />,
+        element: (
+          <PrivateRoute>
+            <UpdateMeal />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/upcoming-meals",
