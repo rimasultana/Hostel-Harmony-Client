@@ -73,13 +73,16 @@ const MealDetails = () => {
       toast.error(error.response?.data?.message || "Failed to request meal");
     },
   });
-
   // Add review mutation
   const reviewMutation = useMutation({
     mutationFn: async () => {
       const res = await axiosSecure.post(`/meals/reviews/${id}`, {
         text: reviewText,
         rating,
+        title: meal?.title,
+        likes: meal?.likes,
+        reviews_count: meal?.reviews_count,
+        image: meal?.image,
       });
       return res.data;
     },

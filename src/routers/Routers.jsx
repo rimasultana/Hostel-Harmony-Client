@@ -21,6 +21,7 @@ import PaymentHistory from "@/pages/Dashboard/PaymentHistory/PaymentHistory";
 import Payment from "@/components/ui/payment";
 import UpcomingMeals from "@/pages/Dashboard/UpcomingMeals/UpcomingMeals";
 import UpcomingFood from "@/pages/UpcomingFood/UpcomingFood";
+import MyReviews from "@/pages/Dashboard/MyReviews/MyReviews";
 
 const router = createBrowserRouter([
   {
@@ -109,12 +110,12 @@ const router = createBrowserRouter([
         element: <MyProfile />,
       },
       {
-        path: "requested-meals",
-        element: <RequestedMeals />,
+        path: "my-reviews",
+        element: <MyReviews />,
       },
       {
-        path: "my-reviews",
-        element: <h1>My Reviews</h1>,
+        path: "requested-meals",
+        element: <RequestedMeals />,
       },
       {
         path: "payment-history",
