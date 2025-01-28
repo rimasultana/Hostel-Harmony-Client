@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import useAuth from "./useAuth";
 
 const axiosSecurity = axios.create({
-  baseURL: "http://localhost:5000/",
+  baseURL: "https://hostel-harmony-server.vercel.app/",
 });
 
 const useAxiosSecurity = () => {
