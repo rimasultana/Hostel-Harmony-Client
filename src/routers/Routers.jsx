@@ -16,6 +16,9 @@ import PrivateRoute from "./PrivateRoute";
 import MealDetails from "@/pages/Meals/MealDetails";
 import UpdateMeal from "@/pages/Meals/UpdateMeal";
 import MyProfile from "@/pages/Dashboard/MyProfile/MyProfile";
+import RequestedMeals from "@/pages/Dashboard/RequestedMeals/RequestedMeals";
+import ServeMeals from "@/pages/Dashboard/ServeMeals/ServeMeals";
+import Payment from "@/components/ui/payment";
 
 const router = createBrowserRouter([
   {
@@ -55,6 +58,10 @@ const router = createBrowserRouter([
         path: "/upcoming-meals",
         element: <UpcomingMeals />,
       },
+      {
+        path: "checkout",
+        element: <Payment />,
+      },
     ],
   },
   {
@@ -88,7 +95,7 @@ const router = createBrowserRouter([
       },
       {
         path: "serve-meals",
-        element: <h1>Serve Meals</h1>,
+        element: <ServeMeals />,
       },
       {
         path: "upcoming-meals",
@@ -101,7 +108,7 @@ const router = createBrowserRouter([
       },
       {
         path: "requested-meals",
-        element: <h1>Requested Meals</h1>,
+        element: <RequestedMeals />,
       },
       {
         path: "my-reviews",
@@ -110,6 +117,10 @@ const router = createBrowserRouter([
       {
         path: "payment-history",
         element: <h1>Payment History</h1>,
+      },
+      {
+        path: "checkout",
+        element: <Payment />,
       },
     ],
   },

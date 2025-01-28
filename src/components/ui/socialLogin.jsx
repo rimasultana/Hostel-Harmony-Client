@@ -18,6 +18,7 @@ const SocialLogin = () => {
           name: user.displayName,
           email: user.email,
           photoURL: user.photoURL,
+          subscription: "Bronze",
         };
         axios.post("/users", userInfo).then((res) => {
           console.log(res.data);

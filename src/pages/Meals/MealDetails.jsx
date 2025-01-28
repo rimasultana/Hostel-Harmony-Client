@@ -63,10 +63,7 @@ const MealDetails = () => {
   // Request meal mutation
   const requestMutation = useMutation({
     mutationFn: async () => {
-      const res = await axiosSecure.post(`/meal-requests`, {
-        meal_id: id,
-        status: "pending",
-      });
+      const res = await axiosSecure.post(`/meal-requests`, meal);
       return res.data;
     },
     onSuccess: () => {
