@@ -22,6 +22,7 @@ import Payment from "@/components/ui/payment";
 import UpcomingMeals from "@/pages/Dashboard/UpcomingMeals/UpcomingMeals";
 import UpcomingFood from "@/pages/UpcomingFood/UpcomingFood";
 import MyReviews from "@/pages/Dashboard/MyReviews/MyReviews";
+import AllReviews from "@/pages/Dashboard/AllReviews/AllReviews";
 
 const router = createBrowserRouter([
   {
@@ -94,7 +95,7 @@ const router = createBrowserRouter([
       },
       {
         path: "all-reviews",
-        element: <h1>All Reviews</h1>,
+        element: <AllReviews />,
       },
       {
         path: "serve-meals",
