@@ -1,15 +1,16 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import { useLocation, useNavigate } from "react-router";
 import useAxiosSecurity from "@/hooks/axiosSecurity";
 import useAuth from "@/hooks/useAuth";
+import { Button } from "./button";
+import toast from "react-hot-toast";
 
 const CheckoutForm = () => {
   const [error, setError] = useState("");
   const { state } = useLocation();
   const [clientSecret, setClientSecret] = useState("");
-  const [transactionId, setTransactionId] = useState("");
+  const [processing, setProcessing] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
   const [axiosSecurity] = useAxiosSecurity();
@@ -30,51 +31,46 @@ const CheckoutForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setProcessing(true);
+    setError("");
 
     if (!stripe || !elements) {
       return;
     }
 
     const card = elements.getElement(CardElement);
-
     if (card === null) {
       return;
     }
 
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card,
-    });
-
-    if (error) {
-      console.log("payment error", error);
-      setError(error.message);
-    } else {
-      console.log("payment method", paymentMethod);
-      setError("");
-    }
-
-    // confirm payment
-    const { paymentIntent, error: confirmError } =
-      await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: card,
-          billing_details: {
-            email: user?.email || "anonymous",
-            name: user?.displayName || "anonymous",
-          },
-        },
+    try {
+      const { error } = await stripe.createPaymentMethod({
+        type: "card",
+        card,
       });
 
-    if (confirmError) {
-      console.log("confirm error");
-    } else {
-      console.log("payment intent", paymentIntent);
-      if (paymentIntent.status === "succeeded") {
-        console.log("transaction id", paymentIntent.id);
-        setTransactionId(paymentIntent.id);
+      if (error) {
+        setError(error.message);
+        toast.error(error.message);
+        return;
+      }
 
-        // now save the payment in the database
+      // confirm payment
+      const { paymentIntent, error: confirmError } =
+        await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: card,
+            billing_details: {
+              email: user?.email || "anonymous",
+              name: user?.displayName || "anonymous",
+            },
+          },
+        });
+
+      if (confirmError) {
+        setError(confirmError.message);
+        toast.error(confirmError.message);
+      } else if (paymentIntent.status === "succeeded") {
         const payment = {
           email: user.email,
           price: totalPrice,
@@ -82,57 +78,77 @@ const CheckoutForm = () => {
           name: user?.displayName,
           transactionId: paymentIntent.id,
           package: state?.package?.name,
-          date: new Date(), // utc date convert. use moment js to
-
-          status: "pending",
+          date: new Date(),
+          status: "padding",
         };
 
         const res = await axiosSecurity.post("/payments", payment);
-        console.log("payment saved", res.data);
         if (res.data?.paymentResult?.insertedId) {
-          Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "Thank you for the taka paisa",
-            showConfirmButton: false,
-            timer: 1500,
-          });
+          toast.success("Payment completed successfully!");
           navigate("/dashboard/payment-history");
         }
       }
+    } catch (err) {
+      setError(err.message);
+      toast.error("An error occurred during payment");
+    } finally {
+      setProcessing(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <CardElement
-        options={{
-          style: {
-            base: {
-              fontSize: "16px",
-              color: "#424770",
-              "::placeholder": {
-                color: "#aab7c4",
-              },
-            },
-            invalid: {
-              color: "#9e2146",
-            },
-          },
-        }}
-      />
-      <button
-        className="btn btn-sm btn-primary my-4"
-        type="submit"
-        disabled={!stripe || !clientSecret}
-      >
-        Pay
-      </button>
-      <p className="text-red-600">{error}</p>
-      {transactionId && (
-        <p className="text-green-600"> Your transaction id: {transactionId}</p>
+    <div className="space-y-6">
+      {state?.package && (
+        <div className="mb-6">
+          <h3 className="font-medium mb-2">Package Details</h3>
+          <div className="bg-primary/5 p-4 rounded-lg">
+            <p className="font-semibold text-lg">{state.package.name}</p>
+            <p className="text-2xl font-bold text-primary">
+              ${state.package.price}
+            </p>
+          </div>
+        </div>
       )}
-    </form>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-4">
+          <label className="block text-sm font-medium">Card Information</label>
+          <div className="border rounded-lg p-4 bg-white">
+            <CardElement
+              options={{
+                style: {
+                  base: {
+                    fontSize: "16px",
+                    color: "#424770",
+                    "::placeholder": {
+                      color: "#aab7c4",
+                    },
+                    padding: "10px 0",
+                  },
+                  invalid: {
+                    color: "#9e2146",
+                  },
+                },
+              }}
+            />
+          </div>
+        </div>
+
+        {error && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={!stripe || !clientSecret || processing}
+        >
+          {processing ? "Processing..." : `Pay $${totalPrice}`}
+        </Button>
+      </form>
+    </div>
   );
 };
 
