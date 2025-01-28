@@ -110,6 +110,7 @@ A modern hostel management system designed to streamline meal planning and user 
 1. Clone the repository
 2. Install dependencies:
    ```bash
+   https://github.com/Programming-Hero-Web-Course4/b10a12-client-side-rimasultana
    cd Hostel-Harmony-Client
    npm install
    ```
