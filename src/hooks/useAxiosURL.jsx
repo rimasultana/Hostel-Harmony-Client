@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosURL = axios.create({
-  baseURL: "http://localhost:5000/",
+  baseURL: "https://hostel-harmony-server.vercel.app/",
 });
 
 const useAxiosURL = () => {
