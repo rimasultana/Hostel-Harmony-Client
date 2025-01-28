@@ -80,7 +80,7 @@ const Payment = () => {
                   </div>
                 </div>
 
-                <div className="bg-blue-50 rounded-xl p-6">
+                {/* <div className="bg-blue-50 rounded-xl p-6">
                   <div className="flex items-center gap-2 text-blue-600 mb-2">
                     <Shield className="w-5 h-5" />
                     <span className="font-medium">Payment Protection</span>
@@ -90,7 +90,7 @@ const Payment = () => {
                     security system. We use industry-standard encryption to keep
                     your data safe.
                   </p>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

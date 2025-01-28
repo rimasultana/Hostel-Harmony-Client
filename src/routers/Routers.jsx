@@ -7,7 +7,6 @@ import About from "@/pages/About/About";
 import Login from "@/pages/Login/Login";
 import Register from "@/pages/Register/Register";
 import Meals from "@/pages/Meals/Meals";
-import UpcomingMeals from "@/pages/UpcomingMeals/UpcomingMeals";
 import AdminProfile from "@/pages/Dashboard/AdminProfile/AdminProfile";
 import ManageUsers from "@/pages/Dashboard/ManageUsers/ManageUsers";
 import AddMeal from "@/pages/Dashboard/AddMeal/AddMeal";
@@ -20,6 +19,8 @@ import RequestedMeals from "@/pages/Dashboard/RequestedMeals/RequestedMeals";
 import ServeMeals from "@/pages/Dashboard/ServeMeals/ServeMeals";
 import PaymentHistory from "@/pages/Dashboard/PaymentHistory/PaymentHistory";
 import Payment from "@/components/ui/payment";
+import UpcomingMeals from "@/pages/Dashboard/UpcomingMeals/UpcomingMeals";
+import UpcomingFood from "@/pages/UpcomingFood/UpcomingFood";
 
 const router = createBrowserRouter([
   {
@@ -57,7 +58,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/upcoming-meals",
-        element: <UpcomingMeals />,
+        element: <UpcomingFood />,
       },
       {
         path: "checkout/:id",
@@ -100,7 +101,7 @@ const router = createBrowserRouter([
       },
       {
         path: "upcoming-meals",
-        element: <h1>Upcoming Meals</h1>,
+        element: <UpcomingMeals />,
       },
       // User Routes
       {
