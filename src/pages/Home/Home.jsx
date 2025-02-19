@@ -80,7 +80,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pt-16">
       {/* 1. Hero Section with Slider */}
       <div className="relative h-[calc(100vh-64px)] overflow-hidden">
         <AnimatePresence mode="wait">

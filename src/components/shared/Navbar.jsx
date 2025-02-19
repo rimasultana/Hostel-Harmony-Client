@@ -69,6 +69,7 @@ const Navbar = () => {
   return (
     <nav
       className={clsx(
+        "fixed top-0 left-0 right-0 z-50 transition-colors duration-200",
         isDarkTheme
           ? "bg-gray-800 border-b border-gray-700"
           : "bg-white border-b border-gray-200"
