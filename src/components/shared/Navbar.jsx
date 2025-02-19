@@ -12,10 +12,12 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import DarkModeToggle from "react-dark-mode-toggle";
 import { FiMenu, FiX } from "react-icons/fi";
 import clsx from "clsx";
+import useAdmin from "@/hooks/useAdmin";
 
 const Navbar = () => {
   const { user, toggleTheme, theme, logoutUser } = useAuth();
   const location = useLocation();
+  const [isAdmin] = useAdmin();
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -131,7 +133,11 @@ const Navbar = () => {
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md z-50">
                     <Link
-                      to="/dashboard"
+                      to={
+                        isAdmin
+                          ? "/dashboard/admin-profile"
+                          : "/dashboard/my-profile"
+                      }
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                       Dashboard
